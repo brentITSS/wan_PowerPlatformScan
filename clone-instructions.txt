@@ -1,0 +1,50 @@
+Clone the Power Platform Tenant Scanner on another computer
+===========================================================
+
+The source is on GitHub:
+
+    https://github.com/brentITSS/wan_PowerPlatformScan
+
+The main branch holds the scanner code, tests, and README.
+
+What stays on the computer that already has a scan
+---------------------------------------------------
+
+.env and .data are not in the repository. Leave them where they are.
+
+.env holds the tenant id and the app registration id.
+.data holds the JSON snapshots and HTML reports, including people's names
+and email addresses.
+
+On the other computer
+---------------------
+
+1. Sign in to GitHub as the account that can see this repository.
+2. Clone it:
+
+       git clone https://github.com/brentITSS/wan_PowerPlatformScan.git
+
+3. Open that folder in VS Code or Visual Studio.
+4. Copy .env across separately. Put it in the project root, next to
+   .env.example. Do not commit it.
+5. Create a virtual environment and install the dependencies. From the
+   project root:
+
+       py -3.13 -m venv .venv
+       .\.venv\Scripts\Activate.ps1
+       pip install -r requirements.txt
+
+6. Run a scan:
+
+       python -m ppscanner scan
+
+Review the latest snapshot in the terminal with:
+
+    python -m ppscanner environments
+
+Write the HTML report with:
+
+    python -m ppscanner report --format html
+
+The HTML file is written under .data\reports\. That folder is also left
+out of git.
