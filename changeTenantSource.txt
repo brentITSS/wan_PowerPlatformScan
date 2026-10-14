@@ -1,0 +1,104 @@
+Changing the tenant scanned by the Power Platform Tenant Scanner
+=================================================================
+
+Short answer
+------------
+
+The scanner reads two settings:
+
+    PP_TENANT_ID
+    PP_CLIENT_ID
+
+These identify the Microsoft Entra tenant and the app registration used for
+sign-in. They are IDs, not passwords or access tokens.
+
+Changing these values is enough only when the app registration is already
+configured and consented in the tenant you want to scan. The current app
+registration is single-tenant, so changing PP_TENANT_ID alone does not make
+the existing app usable in another tenant.
+
+Before switching to a different tenant
+---------------------------------------
+
+1. In the target tenant, create or obtain an app registration for this scanner.
+   For this CLI, it must support public-client/device-code sign-in.
+2. Configure the Power Platform API delegated permissions:
+       PowerApps.Apps.Read
+       PowerAutomate.Flows.Read
+   Also configure the Power Apps Service delegated permission:
+       User
+   To collect managed/unmanaged app status, solutions, and connection
+   references, also configure the Dynamics CRM delegated permission:
+       user_impersonation
+3. Have an authorized administrator grant tenant-wide consent for these
+   permissions.
+4. Make sure the user who signs in has a directly assigned Power Platform
+   Administrator, Dynamics 365 Administrator, or Global Administrator role,
+   and Dataverse privileges to read Canvas App and Model-driven App records.
+5. Set PP_TENANT_ID to the target tenant's Directory (tenant) ID.
+6. Set PP_CLIENT_ID to the Application (client) ID of the app registration
+   that is configured in that target tenant.
+7. Sign in when the scanner prompts you. Additional sign-ins may be needed
+   for the legacy admin API and for each Dataverse environment if silent token
+   acquisition cannot obtain their tokens.
+   If the wrong Microsoft account is
+   selected, sign out of that account or use a fresh/private browser session
+   for the device-code sign-in, then authenticate with the intended account.
+
+For this app's current single-tenant registration, use an app registration
+created in the target tenant. Alternatively, an administrator can deliberately
+change the app registration to multi-tenant and configure consent in each
+target tenant; do not assume that is already enabled.
+
+Local setup
+-----------
+
+Edit the ignored .env file in the project root:
+
+    PP_TENANT_ID=<target tenant ID>
+    PP_CLIENT_ID=<app registration client ID in that tenant>
+
+Save the file and run:
+
+    .\.venv\Scripts\Activate.ps1
+    python -m ppscanner scan
+
+The scanner loads .env for local runs. Environment variables already set in
+the terminal take precedence over values in .env. If results still use the
+previous tenant, check those terminal variables and verify the tenant shown
+during Microsoft sign-in.
+
+For a future hosted web application, configure PP_TENANT_ID and PP_CLIENT_ID
+in the hosting platform's application settings instead of copying the local
+.env file. The app registration must also have the correct authentication
+configuration, delegated permission, and consent for the hosted sign-in flow.
+Never put a user's password, access token, or client secret in this file.
+
+What to expect
+--------------
+
+The current environment-listing endpoint is the tenant-admin List environments
+API, marked preview. It requires the appropriate directly assigned admin role.
+The scanner does not fall back to the user-scoped preview API if admin access
+is denied. Verify the returned inventory against the Power Platform admin
+center if completeness is important.
+
+Managed status is read from the Dataverse `canvasapp.ismanaged` or
+`appmodule.ismanaged` property. Apps without a matching Dataverse record, or
+environments without Dataverse access, remain `not_assessed`; check the
+managed-status coverage in the snapshot before relying on the classifications.
+
+Microsoft references
+--------------------
+
+Power Platform API authentication (legacy):
+https://learn.microsoft.com/power-platform/admin/programmability-authentication
+
+List environments (preview):
+https://learn.microsoft.com/power-platform/admin/list-environments
+
+Power Platform service admin roles:
+https://learn.microsoft.com/power-platform/admin/use-service-admin-role-manage-tenant
+
+Get AdminApps (preview):
+https://learn.microsoft.com/rest/api/power-platform/powerapps/apps/get-admin-apps

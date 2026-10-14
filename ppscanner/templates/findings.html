@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/snapshots/{{ snapshot.snapshot_id }}">Back to snapshot</a></p>
+<h1>Findings</h1>
+{% include "finding_table.html" %}
+{% endblock %}

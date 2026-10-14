@@ -1,0 +1,17 @@
+# Runtime dependencies
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.34,<1.0
+typer>=0.15,<1.0
+rich>=13.9,<15.0
+msal>=1.31,<2.0
+httpx>=0.28,<1.0
+pydantic-settings>=2.7,<3.0
+python-dotenv>=1.0,<2.0
+jinja2>=3.1,<4.0
+python-multipart>=0.0.20,<1.0
+itsdangerous>=2.2,<3.0
+
+# Development and test dependencies
+pytest>=8.3,<9.0
+pytest-cov>=6.0,<7.0
+ruff>=0.9,<1.0

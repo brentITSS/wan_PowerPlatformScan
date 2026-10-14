@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/snapshots/{{ snapshot.snapshot_id }}/findings">Back to findings</a></p>
+<h1>{{ finding.summary }}</h1>
+<div class="panel">
+  <p><span class="severity">{{ finding.severity }}</span>, confidence {{ finding.confidence }}, status {{ finding.status }}.</p>
+  <p>Rule {{ finding.rule_id }} version {{ finding.rule_version }}. Category {{ finding.category }}.</p>
+  <p>Environment {{ finding.environment_name or "tenant" }}. Resource {{ finding.resource_name or "" }} ({{ finding.resource_type or "unspecified" }}).</p>
+  <p>Observed {{ finding.observed_at or "at scan time" }}. Source: {{ finding.source }}.</p>
+  <h2>Evidence</h2>
+  <p>{{ finding.evidence }}</p>
+  <h2>Recommendation</h2>
+  <p>{{ finding.recommendation }}</p>
+  {% if finding.guidance_url %}
+  <p><a href="{{ finding.guidance_url }}">Microsoft guidance</a></p>
+  {% endif %}
+</div>
+{% endblock %}

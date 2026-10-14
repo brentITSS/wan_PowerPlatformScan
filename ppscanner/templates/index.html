@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Snapshots</h1>
+{% if snapshots %}
+<table>
+  <thead>
+    <tr>
+      <th>Snapshot</th>
+      <th>Completed</th>
+      <th>Environments</th>
+      <th>Findings</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for snapshot in snapshots %}
+    <tr>
+      <td><a href="/snapshots/{{ snapshot.snapshot_id }}">{{ snapshot.snapshot_id }}</a></td>
+      <td>{{ snapshot.completed_at }}</td>
+      <td>{{ snapshot.environment_count }}</td>
+      <td>{{ snapshot.finding_count }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No snapshots were found. Run <code>python -m ppscanner scan</code> first.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/snapshots/{{ snapshot.snapshot_id }}">Back to snapshot</a></p>
+<h1>{{ environment.display_name or environment.name or environment.id }}</h1>
+<div class="panel">
+  <p>ID {{ environment.id }}. Type {{ environment.environment_sku or "Unknown" }}. Region {{ environment.region or environment.location or "Unknown" }}. State {{ environment.state or "Unknown" }}.</p>
+  <p>App inventory {{ environment.apps_collection_status }}{% if environment.apps_collection_error %}: {{ environment.apps_collection_error }}{% endif %}.</p>
+  <p>Managed status {{ environment.app_managed_status_collection_status }}{% if environment.app_managed_status_collection_error %}: {{ environment.app_managed_status_collection_error }}{% endif %}.</p>
+  <p>Flow inventory {{ environment.flows_collection_status or "not recorded" }}{% if environment.flows_collection_error %}: {{ environment.flows_collection_error }}{% endif %}.</p>
+  <p>Solution inventory {{ environment.solutions_collection_status or "not recorded" }}{% if environment.solutions_collection_error %}: {{ environment.solutions_collection_error }}{% endif %}.</p>
+  <p>Connection references {{ environment.connection_references_collection_status or "not recorded" }}{% if environment.connection_references_collection_error %}: {{ environment.connection_references_collection_error }}{% endif %}.</p>
+</div>
+<h2>Findings</h2>
+{% include "finding_table.html" %}
+<h2>Apps</h2>
+<table>
+  <thead><tr><th>App</th><th>Type</th><th>Managed</th><th>Owner</th><th>Shared with</th></tr></thead>
+  <tbody>
+    {% for app in environment.apps|default([]) %}
+    <tr>
+      <td>{{ app.display_name or app.name }}</td>
+      <td>{{ app.app_type or "Unknown" }}</td>
+      <td>{{ app.managed_status }}</td>
+      <td>{{ app|owner_label }}</td>
+      <td>{{ app|shared_with_label }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No apps were stored for this environment.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h2>Cloud flows</h2>
+<table>
+  <thead><tr><th>Flow</th><th>State</th><th>Status</th><th>Owner</th><th>Managed</th></tr></thead>
+  <tbody>
+    {% for flow in environment.flows|default([]) %}
+    <tr>
+      <td>{{ flow.display_name or flow.name }}</td>
+      <td>{{ flow.state or "Unknown" }}</td>
+      <td>{{ flow.status or "Unknown" }}</td>
+      <td>{{ flow|owner_label }}</td>
+      <td>{{ flow.managed_status }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No cloud flows were stored for this environment.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<h2>Solutions</h2>
+<table>
+  <thead><tr><th>Solution</th><th>Unique name</th><th>Version</th><th>Managed</th></tr></thead>
+  <tbody>
+    {% for solution in environment.solutions|default([]) %}
+    <tr>
+      <td>{{ solution.display_name or solution.unique_name }}</td>
+      <td>{{ solution.unique_name }}</td>
+      <td>{{ solution.version or "Unknown" }}</td>
+      <td>{{ solution.managed_status }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No solutions were stored for this environment.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

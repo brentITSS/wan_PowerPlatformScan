@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ snapshot.snapshot_id }}</h1>
+<div class="panel">
+  <p>Tenant {{ snapshot.tenant_id }}. Started {{ snapshot.started_at }}. Completed {{ snapshot.completed_at }}.</p>
+  <p>Environment discovery: {{ snapshot.environment_scope }} / {{ snapshot.environment_collection_status }} ({{ snapshot.source_api_status }}).</p>
+  <p>DLP collection: {{ snapshot.dlp_collection_status or "not recorded" }}.
+    {% if snapshot.dlp_collection_error %}{{ snapshot.dlp_collection_error }}{% endif %}
+  </p>
+  <p>{{ snapshot.flow_managed_status_source_api }}</p>
+  <p><a href="/snapshots/{{ snapshot.snapshot_id }}/findings">Findings ({{ findings|length }})</a></p>
+</div>
+<h2>Environments</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Environment</th>
+      <th>Type</th>
+      <th>State</th>
+      <th>Apps</th>
+      <th>Flows</th>
+      <th>Solutions</th>
+      <th>App inventory</th>
+      <th>Flow inventory</th>
+      <th>Solution inventory</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for environment in snapshot.environments %}
+    <tr>
+      <td><a href="/snapshots/{{ snapshot.snapshot_id }}/environments/{{ environment.id|quote_path }}">{{ environment.display_name or environment.name or environment.id }}</a></td>
+      <td>{{ environment.environment_sku or "Unknown" }}</td>
+      <td>{{ environment.state or "Unknown" }}</td>
+      <td>{{ environment.apps|default([])|length }}</td>
+      <td>{{ environment.flows|default([])|length }}</td>
+      <td>{{ environment.solutions|default([])|length }}</td>
+      <td>{{ environment.apps_collection_status }}</td>
+      <td>{{ environment.flows_collection_status or "not recorded" }}</td>
+      <td>{{ environment.solutions_collection_status or "not recorded" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

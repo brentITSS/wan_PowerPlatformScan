@@ -1,0 +1,26 @@
+<table>
+  <thead>
+    <tr>
+      <th>Severity</th>
+      <th>Confidence</th>
+      <th>Status</th>
+      <th>Environment</th>
+      <th>Resource</th>
+      <th>Summary</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finding in findings %}
+    <tr>
+      <td class="severity">{{ finding.severity }}</td>
+      <td>{{ finding.confidence }}</td>
+      <td>{{ finding.status }}</td>
+      <td>{{ finding.environment_name or "" }}</td>
+      <td><a href="/snapshots/{{ snapshot.snapshot_id }}/findings/{{ finding.id|quote_path }}">{{ finding.resource_name or finding.rule_id }}</a></td>
+      <td>{{ finding.summary }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No findings were stored in this snapshot.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
